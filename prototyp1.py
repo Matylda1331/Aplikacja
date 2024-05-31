@@ -67,14 +67,16 @@ def tekst_w_kracie(tekst, czcionka, kolor, kwadrat):
 def rysuj_tekst(próby, kolory, wpisywane, rząd):
     for r in range(len(próby)):
         for k in range(len(próby[r])):
-            kwadr = pygame.Rect(k*rozmiar_okna+brzeg, r*rozmiar_okna+brzeg,rozmiar_okna-brzeg,rozmiar_okna-brzeg)
+            kwadr = pygame.Rect(k * rozmiar_okna + brzeg, r * rozmiar_okna + brzeg, rozmiar_okna - brzeg, rozmiar_okna - brzeg)
             pygame.draw.rect(okno, kolory[r][k], kwadr)
-            tekst_w_kracie(próby[r][k], czcionka_duże, czarny, kwadr)
+            if próby[r][k]:
+                tekst_w_kracie(próby[r][k], czcionka_duże, czarny, kwadr)
 
-    for i, litera in enumerate(wpisywane):
-        kwadr = pygame.Rect(i*rozmiar_okna+brzeg, rząd*rozmiar_okna+brzeg,rozmiar_okna-brzeg,rozmiar_okna-brzeg)
+    for i in range(kolumny):
+        kwadr = pygame.Rect(i * rozmiar_okna + brzeg, rząd * rozmiar_okna + brzeg, rozmiar_okna - brzeg, rozmiar_okna - brzeg)
         pygame.draw.rect(okno, biały, kwadr)
-        tekst_w_kracie(litera, czcionka_duże, czarny, kwadr)
+        if i < len(wpisywane):
+            tekst_w_kracie(wpisywane[i], czcionka_duże, czarny, kwadr)
         pygame.draw.rect(okno, czarny, kwadr, 2)
 
 def lista_haseł():
@@ -114,7 +116,6 @@ def main():
                         próby[rząd] = list(próba_teraz)
                         rząd += 1
                         if próba_teraz == hasło:
-                            print("Gratulacje, hasło odgadnięte poprawnie")
                             wiadomość_wygrana = pygame.Rect(0, wysokość_okna - 50, szerokość_okna, 50)
                             tekst_w_kracie("Gratulacje, hasło odgadnięte poprawnie", czcionka_małe, czarny, wiadomość_wygrana)
                             pygame.display.flip()
@@ -122,6 +123,13 @@ def main():
                             pygame.quit()
                             sys.exit()
                         próba_teraz = ''
+                        if rząd >= rzędy:
+                            wiadomość_przegrana = pygame.Rect(0, wysokość_okna - 50, szerokość_okna, 50)
+                            tekst_w_kracie("Przegrałeś. Hasło to: " + hasło, czcionka_małe, czarny, wiadomość_przegrana)
+                            pygame.display.flip()
+                            pygame.time.wait(3000)
+                            pygame.quit()
+                            sys.exit()
                 elif zdarzenie.unicode.isalpha() and len(próba_teraz) < kolumny:
                     próba_teraz += zdarzenie.unicode.upper()
 
