@@ -5,7 +5,6 @@ import time
 
 pygame.init()
 
-# Stałe
 wysokość_okna = 650
 szerokość_okna = 510
 kolumny = 5
@@ -1035,7 +1034,6 @@ class WordleGame:
     'EJECT', 'ROGER', 'RIVAL', 'UNTIE', 'REFIT', 'AORTA', 'ADULT', 'JUDGE', 'ROWER', 'ARTSY', 'RURAL', 'SHAVE', 'BOBBY', 'ECLAT', 'FELLA', 
     'GAILY', 'HARRY', 'HASTY', 'HYDRO', 'LIEGE', 'OCTAL', 'OMBRE', 'PAYER', 'SOOTH', 'UNSET', 'UNLIT', 'VOMIT', 'FANNY', 'FETUS', 'BUTCH', 
     'STALK', 'FLACK', 'WIDOW', 'AUGUR']
-
     def sprawdzanie(self, próba):
         zielone, zolte, szare = set(), set(), set()
         ile_w_haśle = {char: self.hasło.count(char) for char in self.hasło}
@@ -1090,10 +1088,16 @@ class WordleGame:
             czas_tekst = czcionka_czas.render(f"{czas_minuty}:{czas_sekundy:02}", True, czarny)
             self.okno.blit(czas_tekst, (szerokość_okna - 100, wysokość_okna - 40))
 
-        if self.komunikat is not None:
-            komunikat_tekst = czcionka_małe.render(self.komunikat, True, czerwony)
-            komunikat_rect = komunikat_tekst.get_rect(center=(szerokość_okna // 2, wysokość_okna - 20))
-            self.okno.blit(komunikat_tekst, komunikat_rect)
+        if self.komunikat is not None and self.komunikat_czas is not None:
+            if time.time() - self.komunikat_czas < 1.2:
+                komunikat_prostokąt = pygame.Rect(55, 220, 400, 50)
+                pygame.draw.rect(self.okno, czerwony, komunikat_prostokąt)
+                komunikat_tekst = czcionka_małe.render(self.komunikat, True, czarny)
+                komunikat_rect = komunikat_tekst.get_rect(center=komunikat_prostokąt.center)
+                self.okno.blit(komunikat_tekst, komunikat_rect)
+            else:
+                self.komunikat = None
+                self.komunikat_czas = None
 
     def pokaz_wiadomość(self, wiadomość):
         while True:
@@ -1113,6 +1117,7 @@ class WordleGame:
                 elif zdarzenie.type == pygame.MOUSEBUTTONDOWN:
                     if przycisk_menu.collidepoint(zdarzenie.pos):
                         return
+    
 
     def main(self, czasowy):
         self.hasło = random.choice(self.możliwe_hasła)
@@ -1123,6 +1128,7 @@ class WordleGame:
         self.start_czas = time.time() if czasowy else None
         self.limit_czasu = 120 if czasowy else None
         self.komunikat = None
+        self.komunikat_czas = None
 
         while True:
             if czasowy:
@@ -1147,8 +1153,10 @@ class WordleGame:
                         if len(self.próba_teraz) == kolumny:
                             if self.próba_teraz not in self.lista_słów():
                                 self.komunikat = "Słowo niepoprawne"
+                                self.komunikat_czas = time.time()
                             else:
                                 self.komunikat = None
+                                self.komunikat_czas = None
                                 zielone, zolte, szare = self.sprawdzanie(self.próba_teraz)
                                 for i, litera in enumerate(self.próba_teraz):
                                     if (litera, i) in zielone:
