@@ -116,8 +116,13 @@ class WordleGame:
             self.tekst_w_kracie(wiadomość, czcionka_małe, czarny, pygame.Rect(0, wysokość_okna // 2 - 50, szerokość_okna, 100))
 
             przycisk_menu = pygame.Rect(szerokość_okna // 2 - 100, wysokość_okna // 2 + 100, 200, 50)
+            przycisk_ponownie = pygame.Rect(szerokość_okna // 2 - 100, wysokość_okna // 2 + 170, 200, 50)
+        
             pygame.draw.rect(self.okno, zielony, przycisk_menu)
+            pygame.draw.rect(self.okno, żółty, przycisk_ponownie)
+
             self.tekst_w_kracie("Wróć do menu", czcionka_małe, czarny, przycisk_menu)
+            self.tekst_w_kracie("Zagraj ponownie", czcionka_małe, czarny, przycisk_ponownie)
 
             pygame.display.flip()
 
@@ -127,7 +132,9 @@ class WordleGame:
                     sys.exit()
                 elif zdarzenie.type == pygame.MOUSEBUTTONDOWN:
                     if przycisk_menu.collidepoint(zdarzenie.pos):
-                        return
+                        return "menu"
+                    elif przycisk_ponownie.collidepoint(zdarzenie.pos):
+                        return "ponownie"
 
     def main(self, tryb):
         self.hasło = random.choice(self.możliwe_hasła)
@@ -146,9 +153,13 @@ class WordleGame:
                 pozostały_czas = max(0, self.limit_czasu - int(time.time() - self.start_czas))
                 if pozostały_czas <= 0:
                     if tryb == "czasowy":
-                        self.pokaz_wiadomość("Czas się skończył. Hasło to: " + self.hasło)
+                        wynik = self.pokaz_wiadomość("Czas się skończył. Hasło to: " + self.hasło)
                     elif tryb == "najwięcej_słów":
-                        self.pokaz_wiadomość(f"Czas się skończył. Poprawne słowa: {self.licznik_slow}")
+                        wynik = self.pokaz_wiadomość(f"Czas się skończył. Poprawne słowa: {self.licznik_slow}")
+                    if wynik == "ponownie":
+                        self.main(tryb)
+                    elif wynik == "menu":
+                        return
                     return
             else:
                 pozostały_czas = None
@@ -185,13 +196,17 @@ class WordleGame:
                                     if tryb == "najwięcej_słów":
                                         self.licznik_slow += 1
                                         self.rząd = 0
-                                        
+                                    
                                         self.próby = [[''] * kolumny for _ in range(rzędy)]
                                         self.kolory = [[biały] * kolumny for _ in range(rzędy)]
                                         self.próba_teraz = ''
                                         self.hasło = random.choice(self.możliwe_hasła)
                                     else:
-                                        self.pokaz_wiadomość("Gratulacje, hasło odgadnięte poprawnie")
+                                        wynik = self.pokaz_wiadomość("Gratulacje, hasło odgadnięte poprawnie")
+                                        if wynik == "ponownie":
+                                            self.main(tryb)
+                                        elif wynik == "menu":
+                                            return
                                         return
                                 self.próba_teraz = ''
                                 if self.rząd >= rzędy:
@@ -202,12 +217,17 @@ class WordleGame:
                                         self.próba_teraz = ''
                                         self.hasło = random.choice(self.możliwe_hasła)
                                     else:
-                                        self.pokaz_wiadomość("Przegrałeś. Hasło to: " + self.hasło)
+                                        wynik = self.pokaz_wiadomość("Przegrałeś. Hasło to: " + self.hasło)
+                                        if wynik == "ponownie":
+                                            self.main(tryb)
+                                        elif wynik == "menu":
+                                            return
                                         return
                     elif zdarzenie.unicode.isalpha() and len(self.próba_teraz) < kolumny:
                         self.próba_teraz += zdarzenie.unicode.upper()
 
             pygame.display.flip()
+
 
 
 class Menu:
