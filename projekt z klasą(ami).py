@@ -112,10 +112,14 @@ class WordleGame:
             czas_sekundy = pozostaly_czas % 60
             czas_tekst = czcionka_czas.render(f"{czas_minuty}:{czas_sekundy:02}", True, czarny)
             self.okno.blit(czas_tekst, (szerokosc_okna - 100, wysokosc_okna - 40))
-            if pozostaly_czas>120:
-                licznik_tekst = czcionka_czas.render(f"Słowa: {self.licznik_slow}", True, czarny)
-                self.okno.blit(licznik_tekst, (20, wysokosc_okna - 40))
-            
+            licznik_tekst = czcionka_czas.render(f"Słowa: {self.licznik_slow}", True, czarny)
+            self.okno.blit(licznik_tekst, (20, wysokosc_okna - 40))
+
+        czas = self.aktualizuj_czas()
+        if czas is not None:
+            czas_tekst = czcionka_czas.render(czas, True, czarny)
+            self.okno.blit(czas_tekst, (20, wysokosc_okna - 40))
+
         if self.komunikat is not None and self.komunikat_czas is not None:
             if time.time() - self.komunikat_czas < 1.2:
                 komunikat_prostokat = pygame.Rect(55, 220, 400, 50)
@@ -127,15 +131,30 @@ class WordleGame:
                 self.komunikat = None
                 self.komunikat_czas = None
 
-    def pokaz_wiadomosc(self, wiadomość):
+        self.menu_button = pygame.Rect(szerokosc_okna // 2 - 50, wysokosc_okna - 37, 100, 30)#Dodanie przycisku MENU
+        pygame.draw.rect(self.okno, szary, self.menu_button)
+        self.tekst_w_kracie("MENU", czcionka_male, czarny, self.menu_button)
+
+    def aktualizuj_czas(self):
+        if self.start_czas is not None and self.tryb == "najszybszy":
+            ile_czasu = int(time.time() - self.start_czas)
+            czas_minuty = ile_czasu // 60
+            czas_sekundy = ile_czasu % 60
+            return f"{czas_minuty}:{czas_sekundy:02}"
+        return None
+
+    def pokaz_wiadomosc(self, wiadomosc):
         """Wyświetla wiadomość na ekranie wraz z dwoma przyciskami do wyboru akcji.
         Wyświetla podaną wiadomość na środku ekranu oraz dwa przyciski: "Wróć do menu" i "Zagraj ponownie". 
         Po wybraniu jednej z opcji przez użytkownika  zwraca "menu" lub "ponownie".
         """
         while True:
             self.okno.fill(tlo)
-            self.tekst_w_kracie(wiadomość, czcionka_male, czarny,
-                pygame.Rect(0, wysokosc_okna // 2 - 50, szerokosc_okna, 100))
+            linie_wiadomosci = wiadomosc.split('\n')
+            y = wysokosc_okna // 2 - 50
+            for linia in linie_wiadomosci:
+                self.tekst_w_kracie(linia, czcionka_male, czarny, pygame.Rect(0, y, szerokosc_okna, 50))
+                y += 50
 
             przycisk_menu = pygame.Rect(szerokosc_okna // 2 - 100, wysokosc_okna // 2 + 100, 200, 50)
             przycisk_ponownie = pygame.Rect(szerokosc_okna // 2 - 100, wysokosc_okna // 2 + 170, 200, 50)
@@ -161,27 +180,26 @@ class WordleGame:
     def main(self, tryb):
         """Główna funkcja gry. W zależności od trybu inicjalizuje ustawienia gry,
         rysuje interfejs, obsługuje zdarzenia PyGame"""
+        self.tryb = tryb
         self.haslo = random.choice(self.mozliwe_hasla)
         self.proby = [[''] * kolumny for _ in range(rzedy)]
         self.kolory = [[bialy] * kolumny for _ in range(rzedy)]
         self.proba_teraz = ''
         self.rzad = 0
         self.start_czas = time.time() if tryb != "standard" else None
-        self.limit_czasu = 120 if tryb == "czasowy" else (300 if tryb == "najwięcej_słów" else None)
+        self.limit_czasu = 120 if tryb == "najwięcej_słów" else None
         self.komunikat = None
         self.komunikat_czas = None
         self.licznik_slow = 0
 
         while True:
-            if tryb != "standard":
+            if tryb != "standard" and tryb != "najszybszy":
                 pozostaly_czas = max(0, self.limit_czasu - int(time.time() - self.start_czas))
                 if pozostaly_czas <= 0:
-                    if tryb == "czasowy":
-                        wynik = self.pokaz_wiadomosc("Czas się skończył. Hasło to: " + self.haslo)
-                    elif tryb == "najwięcej_słów":
-                        wynik = self.pokaz_wiadomosc(f"Czas się skończył. Poprawne słowa: {self.licznik_slow}")
                     if wynik == "ponownie":
                         self.main(tryb)
+                    elif tryb == "najwięcej_słów":
+                        wynik = self.pokaz_wiadomosc(f"Czas się skończył. Poprawne słowa: {self.licznik_slow}")
                     elif wynik == "menu":
                         return
                     return
@@ -190,6 +208,7 @@ class WordleGame:
 
             self.krata()
             self.rysuj_tekst(pozostaly_czas)
+
             for zdarzenie in pygame.event.get():
                 if zdarzenie.type == pygame.QUIT:
                     pygame.quit()
@@ -219,18 +238,25 @@ class WordleGame:
                                     if tryb == "najwięcej_słów":
                                         self.licznik_slow += 1
                                         self.rzad = 0
-                                    
                                         self.proby = [[''] * kolumny for _ in range(rzedy)]
                                         self.kolory = [[bialy] * kolumny for _ in range(rzedy)]
                                         self.proba_teraz = ''
                                         self.haslo = random.choice(self.mozliwe_hasla)
+                                        continue
+                                    elif tryb == "najszybszy":
+                                        ile_czasu = int(time.time() - self.start_czas)
+                                        wynik = self.pokaz_wiadomosc(f"Gratulacje, hasło odgadnięte poprawnie. \n Czas: {ile_czasu // 60}:{ile_czasu % 60:02}")
+                                        if wynik == "ponownie":
+                                            self.main(tryb)
+                                        elif wynik == "menu":
+                                            return
                                     else:
                                         wynik = self.pokaz_wiadomosc("Gratulacje, hasło odgadnięte poprawnie")
                                         if wynik == "ponownie":
                                             self.main(tryb)
                                         elif wynik == "menu":
                                             return
-                                        return
+                                    return
                                 self.proba_teraz = ''
                                 if self.rzad >= rzedy:
                                     if tryb == "najwięcej_słów":
@@ -239,6 +265,7 @@ class WordleGame:
                                         self.kolory = [[bialy] * kolumny for _ in range(rzedy)]
                                         self.proba_teraz = ''
                                         self.haslo = random.choice(self.mozliwe_hasla)
+                                        continue
                                     else:
                                         wynik = self.pokaz_wiadomosc("Przegrałeś. Hasło to: " + self.haslo)
                                         if wynik == "ponownie":
@@ -248,6 +275,9 @@ class WordleGame:
                                         return
                     elif zdarzenie.unicode.isalpha() and len(self.proba_teraz) < kolumny:
                         self.proba_teraz += zdarzenie.unicode.upper()
+                elif zdarzenie.type == pygame.MOUSEBUTTONDOWN:
+                    if self.menu_button.collidepoint(zdarzenie.pos):
+                        return
 
             pygame.display.flip()
 
@@ -271,17 +301,17 @@ class Menu:
             self.okno.fill(tlo)
             self.tekst_w_kracie("WORDLE", czcionka_duze, czarny, pygame.Rect(0, 50, szerokosc_okna, 100))
 
-            standardowy_przycisk = pygame.Rect(155, 250, 200, 50)
-            czasowy_przycisk = pygame.Rect(155, 350, 200, 50)
-            najwiecej_slow_przycisk = pygame.Rect(155, 450, 200, 50)  
+            standardowy_przycisk = pygame.Rect(155, 280, 200, 50)
+            najwiecej_slow_przycisk = pygame.Rect(155, 380, 200, 50)  
+            najszybszy_przycisk = pygame.Rect(155, 480, 200, 50)
 
             pygame.draw.rect(self.okno, czerwony, standardowy_przycisk)
-            pygame.draw.rect(self.okno, czerwony, czasowy_przycisk)
             pygame.draw.rect(self.okno, czerwony, najwiecej_slow_przycisk) 
+            pygame.draw.rect(self.okno, czerwony, najszybszy_przycisk)
 
             self.tekst_w_kracie("Standardowa Gra", czcionka_male, czarny, standardowy_przycisk)
-            self.tekst_w_kracie("Gra Na Czas", czcionka_male, czarny, czasowy_przycisk)
-            self.tekst_w_kracie("Najwięcej Słów", czcionka_male, czarny, najwiecej_slow_przycisk)  
+            self.tekst_w_kracie("Najwięcej Słów", czcionka_male, czarny, najwiecej_slow_przycisk)
+            self.tekst_w_kracie("Najszybszy Czas", czcionka_male, czarny, najszybszy_przycisk) 
 
             pygame.display.flip()
 
@@ -292,11 +322,10 @@ class Menu:
                 elif zdarzenie.type == pygame.MOUSEBUTTONDOWN:
                     if standardowy_przycisk.collidepoint(zdarzenie.pos):
                         game.main("standard")
-                    elif czasowy_przycisk.collidepoint(zdarzenie.pos):
-                        game.main("czasowy")
                     elif najwiecej_slow_przycisk.collidepoint(zdarzenie.pos):
-                        game.main("najwięcej_słów")  
-
+                        game.main("najwięcej_słów") 
+                    elif najszybszy_przycisk.collidepoint(zdarzenie.pos):
+                        game.main("najszybszy")
 
 if __name__ == "__main__":
     Menu().menu()
