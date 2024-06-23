@@ -136,7 +136,7 @@ class WordleGame:
         self.tekst_w_kracie("MENU", czcionka_male, czarny, self.menu_button)
 
     def aktualizuj_czas(self):
-        if self.start_czas is not None and self.tryb == "najszybszy":
+        if self.start_czas is not None and self.tryb == "na_czas":
             ile_czasu = int(time.time() - self.start_czas)
             czas_minuty = ile_czasu // 60
             czas_sekundy = ile_czasu % 60
@@ -193,7 +193,7 @@ class WordleGame:
         self.licznik_slow = 0
 
         while True:
-            if tryb != "standard" and tryb != "najszybszy":
+            if tryb != "standard" and tryb != "na_czas":
                 pozostaly_czas = max(0, self.limit_czasu - int(time.time() - self.start_czas))
                 if pozostaly_czas <= 0:
                     if wynik == "ponownie":
@@ -243,7 +243,7 @@ class WordleGame:
                                         self.proba_teraz = ''
                                         self.haslo = random.choice(self.mozliwe_hasla)
                                         continue
-                                    elif tryb == "najszybszy":
+                                    elif tryb == "na_czas":
                                         ile_czasu = int(time.time() - self.start_czas)
                                         wynik = self.pokaz_wiadomosc(f"Gratulacje, hasło odgadnięte poprawnie. \n Czas: {ile_czasu // 60}:{ile_czasu % 60:02}")
                                         if wynik == "ponownie":
@@ -303,15 +303,15 @@ class Menu:
 
             standardowy_przycisk = pygame.Rect(155, 280, 200, 50)
             najwiecej_slow_przycisk = pygame.Rect(155, 380, 200, 50)  
-            najszybszy_przycisk = pygame.Rect(155, 480, 200, 50)
+            na_czas_przycisk = pygame.Rect(155, 480, 200, 50)
 
             pygame.draw.rect(self.okno, czerwony, standardowy_przycisk)
             pygame.draw.rect(self.okno, czerwony, najwiecej_slow_przycisk) 
-            pygame.draw.rect(self.okno, czerwony, najszybszy_przycisk)
+            pygame.draw.rect(self.okno, czerwony, na_czas_przycisk)
 
-            self.tekst_w_kracie("Standardowa Gra", czcionka_male, czarny, standardowy_przycisk)
-            self.tekst_w_kracie("Najwięcej Słów", czcionka_male, czarny, najwiecej_slow_przycisk)
-            self.tekst_w_kracie("Najszybszy Czas", czcionka_male, czarny, najszybszy_przycisk) 
+            self.tekst_w_kracie("Standardowa gra", czcionka_male, czarny, standardowy_przycisk)
+            self.tekst_w_kracie("Najwięcej słów", czcionka_male, czarny, najwiecej_slow_przycisk)
+            self.tekst_w_kracie("Gra na czas", czcionka_male, czarny, na_czas_przycisk) 
 
             pygame.display.flip()
 
@@ -324,8 +324,8 @@ class Menu:
                         game.main("standard")
                     elif najwiecej_slow_przycisk.collidepoint(zdarzenie.pos):
                         game.main("najwięcej_słów") 
-                    elif najszybszy_przycisk.collidepoint(zdarzenie.pos):
-                        game.main("najszybszy")
+                    elif na_czas_przycisk.collidepoint(zdarzenie.pos):
+                        game.main("na_czas")
 
 if __name__ == "__main__":
     Menu().menu()
