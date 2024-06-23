@@ -44,6 +44,13 @@ class WordleGame:
     from listy_slow import lista_slow
 
     def sprawdzanie(self, proba):
+        """Porównuje aktualną próbę gracza z odgadywanym hasłem.
+        
+        Dla słowa wpisanego przez użytkownika, funkcja zwraca zbiory krotek '(litera, indeks)';
+        zielone- poprawne litery na poprawnych pozycjach
+        zolte- poprawne litery na niepoprawnych pozycjach
+        szare- niepoprawne litery.
+        """
         zielone, zolte, szare = set(), set(), set()
         ile_w_hasle = {char: self.haslo.count(char) for char in self.haslo}
         zielone_indeksy = set()
@@ -65,6 +72,7 @@ class WordleGame:
         return zielone, zolte, szare
     
     def krata(self):
+        """Rysuje kratę do gry."""
         self.okno.fill(tlo)
         for rzad in range(rzedy):
             for kolumna in range(kolumny):
@@ -73,11 +81,16 @@ class WordleGame:
                 pygame.draw.rect(self.okno, czarny, kwadraty, 2)
 
     def tekst_w_kracie(self, tekst, czcionka, kolor, kwadrat):
+        """Rysuje litery."""
         tekst_wierzch = czcionka.render(tekst, True, kolor)
         tekst_kwadrat = tekst_wierzch.get_rect(center=kwadrat.center)
         self.okno.blit(tekst_wierzch, tekst_kwadrat)
 
     def rysuj_tekst(self, pozostaly_czas=None):
+        """Rysuje elementy interfejsu na ekranie gry: kratę do gry, wprowadzone słowa, 
+        litery wpisywane w bieżącej próbie, a w przypadku podania argumentu pozostaly_czas odliczanie czasu
+        i liczbę odgadniętych słów.
+        """
         for r, próba in enumerate(self.proby):
             for k, litera in enumerate(próba):
                 kwadr = pygame.Rect(k * rozmiar_okna + brzeg, r * rozmiar_okna + brzeg, 
@@ -115,6 +128,10 @@ class WordleGame:
                 self.komunikat_czas = None
 
     def pokaz_wiadomosc(self, wiadomość):
+        """Wyświetla wiadomość na ekranie wraz z dwoma przyciskami do wyboru akcji.
+        Wyświetla podaną wiadomość na środku ekranu oraz dwa przyciski: "Wróć do menu" i "Zagraj ponownie". 
+        Po wybraniu jednej z opcji przez użytkownika  zwraca "menu" lub "ponownie".
+        """
         while True:
             self.okno.fill(tlo)
             self.tekst_w_kracie(wiadomość, czcionka_male, czarny,
@@ -142,6 +159,8 @@ class WordleGame:
                         return "ponownie"
 
     def main(self, tryb):
+        """Główna funkcja gry. W zależności od trybu inicjalizuje ustawienia gry,
+        rysuje interfejs, obsługuje zdarzenia PyGame"""
         self.haslo = random.choice(self.mozliwe_hasla)
         self.proby = [[''] * kolumny for _ in range(rzedy)]
         self.kolory = [[bialy] * kolumny for _ in range(rzedy)]
@@ -234,16 +253,19 @@ class WordleGame:
 
 
 class Menu:
+    """Inicjalizuje okno gry i ustawia jego tytuł."""
     def __init__(self):
         self.okno = pygame.display.set_mode((szerokosc_okna, wysokosc_okna), 0, 32)
         pygame.display.set_caption("WORDLE - Projekt")
 
     def tekst_w_kracie(self, tekst, czcionka, kolor, kwadrat):
+        """Rysuje tekst na ekranie w podanych kwadracie."""
         tekst_wierzch = czcionka.render(tekst, True, kolor)
         tekst_kwadrat = tekst_wierzch.get_rect(center=kwadrat.center)
         self.okno.blit(tekst_wierzch, tekst_kwadrat)
 
     def menu(self):
+        """Wyświetla menu główne i obsługuje wybór trybu gry."""
         game = WordleGame()
         while True:
             self.okno.fill(tlo)
