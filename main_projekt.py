@@ -53,9 +53,9 @@ class WordleGame:
         """Porównuje aktualną próbę gracza z odgadywanym hasłem.
         
         Dla słowa wpisanego przez użytkownika, funkcja zwraca zbiory krotek '(litera, indeks)';
-        zielone- poprawne litery na poprawnych pozycjach
-        zolte- poprawne litery na niepoprawnych pozycjach
-        szare- niepoprawne litery.
+        zielone -- poprawne litery na poprawnych pozycjach,
+        zolte -- poprawne litery na niepoprawnych pozycjach,
+        szare -- niepoprawne litery.
         """
         zielone: Set[Tuple[str, int]] = set()
         zolte: Set[Tuple[str, int]] = set()
@@ -198,7 +198,8 @@ class WordleGame:
 
     def main(self, tryb: str) -> None:
         """Główna funkcja gry. W zależności od trybu inicjalizuje ustawienia gry,
-        rysuje interfejs, obsługuje zdarzenia PyGame"""
+        rysuje interfejs, obsługuje zdarzenia PyGame.
+        """
         self.tryb = tryb
         self.haslo = random.choice(self.mozliwe_hasla)
         self.proby: List[List[str]] = [[''] * kolumny for _ in range(rzedy)]
