@@ -201,7 +201,7 @@ class WordleGame:
         self.proba_teraz = ''
         self.rzad = 0
         self.start_czas = time.time() if tryb != "standard" else None
-        self.limit_czasu = 300 if tryb == "najwięcej_słów" else None #Ustawienie czasu w trybie najwięcej słów
+        self.limit_czasu = 10 if tryb == "najwięcej_słów" else None # Ustawienie czasu w trybie najwięcej słów
         self.komunikat = None
         self.komunikat_czas = None
         self.licznik_slow = 0
@@ -211,10 +211,12 @@ class WordleGame:
             if tryb != "standard" and tryb != "na_czas":
                 pozostaly_czas = max(0, self.limit_czasu - int(time.time() - self.start_czas))
                 if pozostaly_czas <= 0:
+                    if tryb == "najwięcej_słów":
+                        wynik = self.pokaz_wiadomosc(f"Koniec czasu. Słowa: {self.licznik_slow}")
+                    else:
+                        wynik = self.pokaz_wiadomosc("Czas się skończył.")
                     if wynik == "ponownie":
                         self.main(tryb)
-                    elif tryb == "najwięcej_słów":
-                        wynik = self.pokaz_wiadomosc(f"Czas się skończył. Poprawne słowa: {self.licznik_slow}")
                     elif wynik == "menu":
                         return
                     return
@@ -295,6 +297,7 @@ class WordleGame:
                         return
 
             pygame.display.flip()
+
 
 
 
