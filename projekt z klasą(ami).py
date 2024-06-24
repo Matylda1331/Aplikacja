@@ -275,7 +275,7 @@ class WordleGame:
                                 self.proba_teraz = ''
                                 if self.rzad >= rzedy: # Sprawdza, czy przekroczono liczbę prób.
                                     if tryb == "najwięcej_słów":
-                                        self.rząd = 0
+                                        self.rzad = 0
                                         self.proby = [[''] * kolumny for _ in range(rzedy)]
                                         self.kolory = [[bialy] * kolumny for _ in range(rzedy)]
                                         self.proba_teraz = ''
@@ -295,6 +295,8 @@ class WordleGame:
                         return
 
             pygame.display.flip()
+
+
 
 
 class Menu:
