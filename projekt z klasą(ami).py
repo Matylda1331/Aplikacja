@@ -201,7 +201,7 @@ class WordleGame:
         self.proba_teraz = ''
         self.rzad = 0
         self.start_czas = time.time() if tryb != "standard" else None
-        self.limit_czasu = 10 if tryb == "najwięcej_słów" else None # Ustawienie czasu w trybie najwięcej słów
+        self.limit_czasu = 300 if tryb == "najwięcej_słów" else None # Ustawienie czasu w trybie najwięcej słów
         self.komunikat = None
         self.komunikat_czas = None
         self.licznik_slow = 0
