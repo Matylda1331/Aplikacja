@@ -8,21 +8,22 @@ from typing import List, Optional, Tuple, Set, Union
 pygame.init()
 
 # Ustawienia okna gry
-wysokosc_okna: int = 650
-szerokosc_okna: int = 510
-kolumny: int = 5
-rzedy: int = 6
-rozmiar_okna: int = 100
-brzeg: int = 5
-tlo: Tuple[int, int, int] = (255, 255, 255)
+WYSOKOSC_OKNA: int = 650
+SZEROKOSC_OKNA: int = 510
+KOLUMNY: int = 5
+RZEDY: int = 6
+ROZMIAR_OKNA: int = 100
+BRZEG: int = 5
+TLO: Tuple[int, int, int] = (255, 255, 255)
 
 # Kolory używane w grze
-czarny: Tuple[int, int, int] = (0, 0, 0)
-szary: Tuple[int, int, int] = (155, 155, 155)
-zolty: Tuple[int, int, int] = (255, 212, 34)
-zielony: Tuple[int, int, int] = (58, 205, 22)
-bialy: Tuple[int, int, int] = (255, 255, 255)
-czerwony: Tuple[int, int, int] = (255, 50, 30)
+CZARNY: Tuple[int, int, int] = (0, 0, 0)
+SZARY: Tuple[int, int, int] = (155, 155, 155)
+ZOLTY: Tuple[int, int, int] = (255, 255, 153)
+ZIELONY: Tuple[int, int, int] = (111, 169, 111)
+BIALY: Tuple[int, int, int] = (255, 255, 255)
+CZERWONY: Tuple[int, int, int] = (255, 50, 30)
+ROZOWY: Tuple[int, int, int] = (255, 153, 204)
 
 # Czcionki używane w grze
 czcionka_duze: pygame.font.Font = pygame.font.SysFont('times new roman', 68)
@@ -32,13 +33,13 @@ czcionka_czas: pygame.font.Font = pygame.font.SysFont('times new roman', 28)
 class WordleGame:
     def __init__(self) -> None:
         # Inicjalizacja okna gry
-        self.okno: pygame.Surface = pygame.display.set_mode((szerokosc_okna, wysokosc_okna), 0, 32)
+        self.okno: pygame.Surface = pygame.display.set_mode((SZEROKOSC_OKNA, WYSOKOSC_OKNA), 0, 32)
         pygame.display.set_caption("WORDLE - Projekt")
         # Listy słów
         self.mozliwe_hasla = self.lista_hasel()
         self.haslo: str = random.choice(self.mozliwe_hasla) # Losowe hasło
-        self.proby: List[List[str]] = [[''] * kolumny for _ in range(rzedy)]
-        self.kolory: List[List[Tuple[int, int, int]]] = [[bialy] * kolumny for _ in range(rzedy)]
+        self.proby: List[List[str]] = [[''] * KOLUMNY for _ in range(RZEDY)]
+        self.kolory: List[List[Tuple[int, int, int]]] = [[BIALY] * KOLUMNY for _ in range(RZEDY)]
         self.proba_teraz: str = ''
         self.rzad: int = 0
         self.start_czas: Optional[float] = None
@@ -83,12 +84,12 @@ class WordleGame:
     
     def krata(self) -> None:
         """Rysuje kratę do gry."""
-        self.okno.fill(tlo)
-        for rzad in range(rzedy):
-            for kolumna in range(kolumny):
-                kwadraty = pygame.Rect(kolumna * rozmiar_okna + brzeg, rzad * rozmiar_okna + brzeg,
-                    rozmiar_okna - brzeg, rozmiar_okna - brzeg)
-                pygame.draw.rect(self.okno, czarny, kwadraty, 2)
+        self.okno.fill(TLO)
+        for rzad in range(RZEDY):
+            for kolumna in range(KOLUMNY):
+                kwadraty = pygame.Rect(kolumna * ROZMIAR_OKNA + BRZEG, rzad * ROZMIAR_OKNA + BRZEG,
+                    ROZMIAR_OKNA - BRZEG, ROZMIAR_OKNA - BRZEG)
+                pygame.draw.rect(self.okno, CZARNY, kwadraty, 2)
 
     def tekst_w_kracie(self, tekst: str, czcionka: pygame.font.Font, kolor: Tuple[int, int, int], kwadrat: pygame.Rect) -> None:
         """Rysuje litery."""
@@ -104,42 +105,42 @@ class WordleGame:
         # Rysowanie wprowadzonych słów
         for r, próba in enumerate(self.proby):
             for k, litera in enumerate(próba):
-                kwadr = pygame.Rect(k * rozmiar_okna + brzeg, r * rozmiar_okna + brzeg, 
-                    rozmiar_okna - brzeg, rozmiar_okna - brzeg)
+                kwadr = pygame.Rect(k * ROZMIAR_OKNA + BRZEG, r * ROZMIAR_OKNA + BRZEG, 
+                    ROZMIAR_OKNA - BRZEG, ROZMIAR_OKNA - BRZEG)
                 pygame.draw.rect(self.okno, self.kolory[r][k], kwadr)
                 if litera:
-                    self.tekst_w_kracie(litera, czcionka_duze, czarny, kwadr)
+                    self.tekst_w_kracie(litera, czcionka_duze, CZARNY, kwadr)
 
         # Rysowanie bieżącej próby
-        for i in range(kolumny):
-            kwadr = pygame.Rect(i * rozmiar_okna + brzeg, self.rzad * rozmiar_okna + brzeg,
-                rozmiar_okna - brzeg, rozmiar_okna - brzeg)
-            pygame.draw.rect(self.okno, bialy, kwadr)
+        for i in range(KOLUMNY):
+            kwadr = pygame.Rect(i * ROZMIAR_OKNA + BRZEG, self.rzad * ROZMIAR_OKNA + BRZEG,
+                ROZMIAR_OKNA - BRZEG, ROZMIAR_OKNA - BRZEG)
+            pygame.draw.rect(self.okno, BIALY, kwadr)
             if i < len(self.proba_teraz):
-                self.tekst_w_kracie(self.proba_teraz[i], czcionka_duze, czarny, kwadr)
-            pygame.draw.rect(self.okno, czarny, kwadr, 2)
+                self.tekst_w_kracie(self.proba_teraz[i], czcionka_duze, CZARNY, kwadr)
+            pygame.draw.rect(self.okno, CZARNY, kwadr, 2)
 
         # Rysowanie odliczania czasu i licznika słów
         if pozostaly_czas is not None:
             czas_minuty = pozostaly_czas // 60
             czas_sekundy = pozostaly_czas % 60
-            czas_tekst = czcionka_czas.render(f"{czas_minuty}:{czas_sekundy:02}", True, czarny)
-            self.okno.blit(czas_tekst, (szerokosc_okna - 100, wysokosc_okna - 40))
-            licznik_tekst = czcionka_czas.render(f"Słowa: {self.licznik_slow}", True, czarny)
-            self.okno.blit(licznik_tekst, (20, wysokosc_okna - 40))
+            czas_tekst = czcionka_czas.render(f"{czas_minuty}:{czas_sekundy:02}", True, CZARNY)
+            self.okno.blit(czas_tekst, (SZEROKOSC_OKNA - 100, WYSOKOSC_OKNA - 40))
+            licznik_tekst = czcionka_czas.render(f"Słowa: {self.licznik_slow}", True, CZARNY)
+            self.okno.blit(licznik_tekst, (20, WYSOKOSC_OKNA - 40))
 
         # Aktualizacja czasu gry
         czas = self.aktualizuj_czas()
         if czas is not None:
-            czas_tekst = czcionka_czas.render(czas, True, czarny)
-            self.okno.blit(czas_tekst, (20, wysokosc_okna - 40))
+            czas_tekst = czcionka_czas.render(czas, True, CZARNY)
+            self.okno.blit(czas_tekst, (20, WYSOKOSC_OKNA - 40))
 
         # Wyświetlanie błędu 
         if self.komunikat is not None and self.komunikat_czas is not None:
             if time.time() - self.komunikat_czas < 1.2:
                 komunikat_prostokat = pygame.Rect(55, 220, 400, 50)
-                pygame.draw.rect(self.okno, czerwony, komunikat_prostokat)
-                komunikat_tekst = czcionka_male.render(self.komunikat, True, czarny)
+                pygame.draw.rect(self.okno, CZERWONY, komunikat_prostokat)
+                komunikat_tekst = czcionka_male.render(self.komunikat, True, CZARNY)
                 komunikat_rect = komunikat_tekst.get_rect(center=komunikat_prostokat.center)
                 self.okno.blit(komunikat_tekst, komunikat_rect)
             else:
@@ -147,9 +148,9 @@ class WordleGame:
                 self.komunikat_czas = None
 
         # Dodanie przycisku MENU
-        self.menu_button = pygame.Rect(szerokosc_okna // 2 - 50, wysokosc_okna - 37, 100, 30)
-        pygame.draw.rect(self.okno, szary, self.menu_button)
-        self.tekst_w_kracie("MENU", czcionka_male, czarny, self.menu_button)
+        self.menu_button = pygame.Rect(SZEROKOSC_OKNA // 2 - 50, WYSOKOSC_OKNA - 37, 100, 30)
+        pygame.draw.rect(self.okno, SZARY, self.menu_button)
+        self.tekst_w_kracie("MENU", czcionka_male, CZARNY, self.menu_button)
 
     def aktualizuj_czas(self) -> Optional[str]:
         """Aktualizuje czas gry i zwraca go w formacie MM:SS."""
@@ -166,22 +167,22 @@ class WordleGame:
         Po wybraniu jednej z opcji przez użytkownika zwraca "menu" lub "ponownie".
         """
         while True:
-            self.okno.fill(tlo)
+            self.okno.fill(TLO)
             linie_wiadomosci = wiadomosc.split('\n')
-            y = wysokosc_okna // 2 - 50
+            y = WYSOKOSC_OKNA // 2 - 50
             for linia in linie_wiadomosci:
-                self.tekst_w_kracie(linia, czcionka_male, czarny, pygame.Rect(0, y, szerokosc_okna, 50))
+                self.tekst_w_kracie(linia, czcionka_male, CZARNY, pygame.Rect(0, y, SZEROKOSC_OKNA, 50))
                 y += 50
 
             # Dodanie przycisków 
-            przycisk_menu = pygame.Rect(szerokosc_okna // 2 - 100, wysokosc_okna // 2 + 100, 200, 50)
-            przycisk_ponownie = pygame.Rect(szerokosc_okna // 2 - 100, wysokosc_okna // 2 + 170, 200, 50)
+            przycisk_menu = pygame.Rect(SZEROKOSC_OKNA // 2 - 100, WYSOKOSC_OKNA // 2 + 100, 200, 50)
+            przycisk_ponownie = pygame.Rect(SZEROKOSC_OKNA // 2 - 100, WYSOKOSC_OKNA // 2 + 170, 200, 50)
         
-            pygame.draw.rect(self.okno, zielony, przycisk_menu)
-            pygame.draw.rect(self.okno, zolty, przycisk_ponownie)
+            pygame.draw.rect(self.okno, ROZOWY, przycisk_menu)
+            pygame.draw.rect(self.okno, ROZOWY, przycisk_ponownie)
 
-            self.tekst_w_kracie("Wróć do menu", czcionka_male, czarny, przycisk_menu)
-            self.tekst_w_kracie("Zagraj ponownie", czcionka_male, czarny, przycisk_ponownie)
+            self.tekst_w_kracie("Wróć do menu", czcionka_male, CZARNY, przycisk_menu)
+            self.tekst_w_kracie("Zagraj ponownie", czcionka_male, CZARNY, przycisk_ponownie)
 
             pygame.display.flip()
 
@@ -202,8 +203,8 @@ class WordleGame:
         """
         self.tryb = tryb
         self.haslo = random.choice(self.mozliwe_hasla)
-        self.proby: List[List[str]] = [[''] * kolumny for _ in range(rzedy)]
-        self.kolory: List[List[str]] = [[bialy] * kolumny for _ in range(rzedy)]
+        self.proby: List[List[str]] = [[''] * KOLUMNY for _ in range(RZEDY)]
+        self.kolory: List[List[str]] = [[BIALY] * KOLUMNY for _ in range(RZEDY)]
         self.proba_teraz: str = ''
         self.rzad: int = 0
         self.start_czas: Optional[float] = time.time() if tryb != "standard" else None
@@ -240,7 +241,7 @@ class WordleGame:
                     if zdarzenie.key == pygame.K_BACKSPACE:
                         self.proba_teraz = self.proba_teraz[:-1]
                     elif zdarzenie.key == pygame.K_RETURN:
-                        if len(self.proba_teraz) == kolumny:  # Sprawdza, czy długość słowa jest zgodna.
+                        if len(self.proba_teraz) == KOLUMNY:  # Sprawdza, czy długość słowa jest zgodna.
                             if self.proba_teraz not in self.lista_slow():  # Sprawdza poprawność słowa.
                                 self.komunikat = "Słowo niepoprawne"
                                 self.komunikat_czas = time.time()
@@ -250,19 +251,19 @@ class WordleGame:
                                 zielone, zolte, szare = self.sprawdzanie(self.proba_teraz)  # Sprawdza poprawność liter.
                                 for i, litera in enumerate(self.proba_teraz):
                                     if (litera, i) in zielone:
-                                        self.kolory[self.rzad][i] = zielony
+                                        self.kolory[self.rzad][i] = ZIELONY
                                     elif (litera, i) in zolte:
-                                        self.kolory[self.rzad][i] = zolty
+                                        self.kolory[self.rzad][i] = ZOLTY
                                     elif (litera, i) in szare:
-                                        self.kolory[self.rzad][i] = szary
+                                        self.kolory[self.rzad][i] = SZARY
                                 self.proby[self.rzad] = list(self.proba_teraz)
                                 self.rzad += 1
                                 if self.proba_teraz == self.haslo:  # Sprawdza, czy słowo jest poprawne.
                                     if tryb == "najwięcej_słów":
                                         self.licznik_slow += 1
                                         self.rzad = 0
-                                        self.proby = [[''] * kolumny for _ in range(rzedy)]
-                                        self.kolory = [[bialy] * kolumny for _ in range(rzedy)]
+                                        self.proby = [[''] * KOLUMNY for _ in range(RZEDY)]
+                                        self.kolory = [[BIALY] * KOLUMNY for _ in range(RZEDY)]
                                         self.proba_teraz = ''
                                         self.haslo = random.choice(self.mozliwe_hasla)
                                         continue
@@ -281,11 +282,11 @@ class WordleGame:
                                             return
                                     return
                                 self.proba_teraz = ''
-                                if self.rzad >= rzedy:  # Sprawdza, czy przekroczono liczbę prób.
+                                if self.rzad >= RZEDY:  # Sprawdza, czy przekroczono liczbę prób.
                                     if tryb == "najwięcej_słów":
                                         self.rzad = 0
-                                        self.proby = [[''] * kolumny for _ in range(rzedy)]
-                                        self.kolory = [[bialy] * kolumny for _ in range(rzedy)]
+                                        self.proby = [[''] * KOLUMNY for _ in range(RZEDY)]
+                                        self.kolory = [[BIALY] * KOLUMNY for _ in range(RZEDY)]
                                         self.proba_teraz = ''
                                         self.haslo = random.choice(self.mozliwe_hasla)
                                         continue
@@ -296,7 +297,7 @@ class WordleGame:
                                         elif wynik == "menu":
                                             return
                                         return
-                    elif zdarzenie.unicode.isalpha() and len(self.proba_teraz) < kolumny:
+                    elif zdarzenie.unicode.isalpha() and len(self.proba_teraz) < KOLUMNY:
                         self.proba_teraz += zdarzenie.unicode.upper()
                 elif zdarzenie.type == pygame.MOUSEBUTTONDOWN:  # Obsługuje kliknięcie przycisku menu.
                     if self.menu_button.collidepoint(zdarzenie.pos):
@@ -307,7 +308,7 @@ class WordleGame:
 class Menu:
     """Inicjalizuje okno gry i ustawia jego tytuł."""
     def __init__(self) -> None:
-        self.okno: pygame.Surface = pygame.display.set_mode((szerokosc_okna, wysokosc_okna), 0, 32)
+        self.okno: pygame.Surface = pygame.display.set_mode((SZEROKOSC_OKNA, WYSOKOSC_OKNA), 0, 32)
         pygame.display.set_caption("WORDLE - Projekt")
 
     def tekst_w_kracie(self, tekst: str, czcionka: pygame.font.Font, kolor: Tuple[int, int, int], kwadrat: pygame.Rect) -> None:
@@ -320,8 +321,8 @@ class Menu:
         """Wyświetla menu główne i obsługuje wybór trybu gry."""
         game: WordleGame = WordleGame()
         while True:
-            self.okno.fill(tlo)
-            self.tekst_w_kracie("WORDLE", czcionka_duze, czarny, pygame.Rect(0, 50, szerokosc_okna, 100))
+            self.okno.fill(TLO)
+            self.tekst_w_kracie("WORDLE", czcionka_duze, CZARNY, pygame.Rect(0, 50, SZEROKOSC_OKNA, 100))
 
             # Zdefiniowanie prostokątów dla przycisków w menu
             standardowy_przycisk: pygame.Rect = pygame.Rect(155, 280, 200, 50)
@@ -329,14 +330,14 @@ class Menu:
             na_czas_przycisk: pygame.Rect = pygame.Rect(155, 480, 200, 50)
 
             # Rysowanie przycisków na ekranie
-            pygame.draw.rect(self.okno, czerwony, standardowy_przycisk)
-            pygame.draw.rect(self.okno, czerwony, najwiecej_slow_przycisk)
-            pygame.draw.rect(self.okno, czerwony, na_czas_przycisk)
+            pygame.draw.rect(self.okno, ROZOWY, standardowy_przycisk)
+            pygame.draw.rect(self.okno, ROZOWY, najwiecej_slow_przycisk)
+            pygame.draw.rect(self.okno, ROZOWY, na_czas_przycisk)
 
             # Dodanie tekstów na przyciskach
-            self.tekst_w_kracie("Standardowa gra", czcionka_male, czarny, standardowy_przycisk)
-            self.tekst_w_kracie("Najwięcej słów", czcionka_male, czarny, najwiecej_slow_przycisk)
-            self.tekst_w_kracie("Gra na czas", czcionka_male, czarny, na_czas_przycisk)
+            self.tekst_w_kracie("Standardowa gra", czcionka_male, CZARNY, standardowy_przycisk)
+            self.tekst_w_kracie("Najwięcej słów", czcionka_male, CZARNY, najwiecej_slow_przycisk)
+            self.tekst_w_kracie("Gra na czas", czcionka_male, CZARNY, na_czas_przycisk)
 
             pygame.display.flip()
 
