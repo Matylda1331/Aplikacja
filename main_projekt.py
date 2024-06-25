@@ -208,7 +208,7 @@ class WordleGame:
         self.proba_teraz: str = ''
         self.rzad: int = 0
         self.start_czas: Optional[float] = time.time() if tryb != "standard" else None
-        self.limit_czasu: Optional[int] = 5 if tryb == "najwięcej_słów" else None  # Ustawienie czasu w trybie najwięcej słów
+        self.limit_czasu: Optional[int] = 300 if tryb == "najwięcej_słów" else None  # Ustawienie czasu w trybie najwięcej słów
         self.komunikat: Optional[str] = None
         self.komunikat_czas: Optional[float] = None
         self.licznik_slow: int = 0
@@ -219,7 +219,7 @@ class WordleGame:
                 pozostaly_czas: Optional[int] = max(0, self.limit_czasu - int(time.time() - self.start_czas)) if self.start_czas is not None else None
                 if pozostaly_czas is not None and pozostaly_czas <= 0:
                     if tryb == "najwięcej_słów":
-                        wynik = self.pokaz_wiadomosc(f"Koniec czasu. Słowa: {self.licznik_slow}")
+                        wynik = self.pokaz_wiadomosc(f"Koniec czasu. \n Słowa: {self.licznik_slow}")
                     if wynik == "ponownie":
                         self.main(tryb)
                     elif wynik == "menu":
@@ -289,7 +289,7 @@ class WordleGame:
                                         self.haslo = random.choice(self.mozliwe_hasla)
                                         continue
                                     else:
-                                        wynik = self.pokaz_wiadomosc("Przegrałeś. Hasło to: " + self.haslo)
+                                        wynik = self.pokaz_wiadomosc("Przegrałeś. \n Hasło to: " + self.haslo)
                                         if wynik == "ponownie":
                                             self.main(tryb)
                                         elif wynik == "menu":
