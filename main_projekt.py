@@ -310,6 +310,8 @@ class Menu:
     def __init__(self) -> None:
         self.okno: pygame.Surface = pygame.display.set_mode((SZEROKOSC_OKNA, WYSOKOSC_OKNA), 0, 32)
         pygame.display.set_caption("WORDLE - Projekt")
+        self.tlo = pygame.image.load("tlo.jpeg")
+        self.tlo = pygame.transform.scale(self.tlo, (SZEROKOSC_OKNA, WYSOKOSC_OKNA))
 
     def tekst_w_kracie(self, tekst: str, czcionka: pygame.font.Font, kolor: Tuple[int, int, int], kwadrat: pygame.Rect) -> None:
         """Rysuje tekst na ekranie w podanych kwadracie."""
@@ -321,7 +323,7 @@ class Menu:
         """Wyświetla menu główne i obsługuje wybór trybu gry."""
         game: WordleGame = WordleGame()
         while True:
-            self.okno.fill(TLO)
+            self.okno.blit(self.tlo, (0, 0))
             self.tekst_w_kracie("WORDLE", czcionka_duze, CZARNY, pygame.Rect(0, 50, SZEROKOSC_OKNA, 100))
 
             # Zdefiniowanie prostokątów dla przycisków w menu
