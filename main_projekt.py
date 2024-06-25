@@ -208,7 +208,7 @@ class WordleGame:
         self.proba_teraz: str = ''
         self.rzad: int = 0
         self.start_czas: Optional[float] = time.time() if tryb != "standard" else None
-        self.limit_czasu: Optional[int] = 300 if tryb == "najwięcej_słów" else None  # Ustawienie czasu w trybie najwięcej słów
+        self.limit_czasu: Optional[int] = 5 if tryb == "najwięcej_słów" else None  # Ustawienie czasu w trybie najwięcej słów
         self.komunikat: Optional[str] = None
         self.komunikat_czas: Optional[float] = None
         self.licznik_slow: int = 0
@@ -220,8 +220,6 @@ class WordleGame:
                 if pozostaly_czas is not None and pozostaly_czas <= 0:
                     if tryb == "najwięcej_słów":
                         wynik = self.pokaz_wiadomosc(f"Koniec czasu. Słowa: {self.licznik_slow}")
-                    else:
-                        wynik = self.pokaz_wiadomosc("Czas się skończył.")
                     if wynik == "ponownie":
                         self.main(tryb)
                     elif wynik == "menu":
@@ -269,13 +267,13 @@ class WordleGame:
                                         continue
                                     elif tryb == "na_czas":
                                         ile_czasu = int(time.time() - self.start_czas)
-                                        wynik = self.pokaz_wiadomosc(f"Gratulacje, hasło odgadnięte poprawnie. \n Czas: {ile_czasu // 60}:{ile_czasu % 60:02}")
+                                        wynik = self.pokaz_wiadomosc(f"Gratulacje, hasło odgadnięte poprawnie. \n Czas: {ile_czasu // 60}:{ile_czasu % 60:02} \n Hasło to: " + self.haslo)
                                         if wynik == "ponownie":
                                             self.main(tryb)
                                         elif wynik == "menu":
                                             return
                                     else:
-                                        wynik = self.pokaz_wiadomosc("Gratulacje, hasło odgadnięte poprawnie")
+                                        wynik = self.pokaz_wiadomosc("Gratulacje, hasło odgadnięte poprawnie. \n Hasło to: " + self.haslo)
                                         if wynik == "ponownie":
                                             self.main(tryb)
                                         elif wynik == "menu":
