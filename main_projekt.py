@@ -273,7 +273,7 @@ class WordleGame:
                                         elif wynik == "menu":
                                             return
                                     else:
-                                        wynik = self.pokaz_wiadomosc("Gratulacje, hasło odgadnięte poprawnie. \n Hasło to: " + self.haslo)
+                                        wynik = self.pokaz_wiadomosc(f"Gratulacje, hasło odgadnięte poprawnie. \n Liczba prób: {self.rzad} \n Hasło to: " + self.haslo)
                                         if wynik == "ponownie":
                                             self.main(tryb)
                                         elif wynik == "menu":
